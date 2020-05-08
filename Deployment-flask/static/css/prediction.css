@@ -102,7 +102,15 @@ h3{
     background-color:#628C4F;
 }
 
-div.container-fluid{
-    background-color: #F2F2F2;
+footer.page-footer {
+    margin-top: 20px;
+	background-color:#eee;
+	border-radius: .3rem;
+	text-align: center;
+	padding: 10px 10px;
+}
+.footer p{
+    color: #272838;
+    text-align: center;
 }
 
