@@ -35,6 +35,9 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="/LR">LR</a>
           <a class="dropdown-item" href="/RFC">RFC</a>
+          <a class="dropdown-item" href="/SVC">SVC</a>
+          <!-- <a class="dropdown-item" href="/sequential">Sequential</a> -->
+        </div>
         </div>
       </li>
     </ul>
@@ -47,24 +50,50 @@
     <div class="row justify-content-center">
     <div class="col-10">
      <br>
-      <h3>Predict Analysis</h3>
+      <h1>Predictive Analysis</h1>
      <br>
-  {% if prediction_text: %}
-         <h5>Covid-19 result based on blood test: {{prediction_text}}</h5>
-  {% endif %}
-   <br>
+
+     <!-- ALERT disclaimer -->
+      <div class="alert alert-info" role="alert">
+        <strong>Disclaimer:</strong> This tool does not provide medical advice. It is intended for informational purposes only. It is not a substitute for professional medical advice, diagnosis or treatment. Never ignore professional medical advice in seeking treatment because of something you come across. If you think you may have a medical emergency, immediately call your doctor or dial 911.
+      </div>
+
+      <!-- Post result of preditive model: negative or positive -->
+      {% if prediction_text == "Negative": %}
+        <div class="alert alert-success align-middle" role="alert">
+          <h4>Covid-19 result based on blood test: <strong>{{ prediction_text }}</strong></h4>
+        </div>
+      {% elif prediction_text == "Positive": %}
+        <div class="alert alert-danger align-middle" role="alert">
+          <h4>Covid-19 result based on blood test: <strong>{{ prediction_text }}</strong></h4>
+        </div>
+      {% endif %}
+
   <!-- Input For Receiving Query to our ML -->
   <!-- 'patient_age_quantile', 'leukocytes', 'platelets', 'monocytes', 'hematocrit', 'red_blood_cells', 'lymphocytes', 'eosinophils', 'hemoglobin'-->
 
 <form action="{{ url_for('predict')}}"method="post">
-<div class="form-check form-check-inline">
+<div class="selection">
+ <div class="form-check form-check-inline">
   <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="LR">
-  <label class="form-check-label" for="inlineRadio1">LR</label>
-</div>
-<div class="form-check form-check-inline">
+  <label class="form-check-label" for="inlineRadio1">Logistic Regression</label>
+ </div>
+ <div class="form-check form-check-inline">
   <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="RFC">
-  <label class="form-check-label" for="inlineRadio2">RFC</label>
+  <label class="form-check-label" for="inlineRadio2">Random Forest Classifier </label>
+ </div>
+ <div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="SVC">
+  <label class="form-check-label" for="inlineRadio3">Support Vector Classifier</label>
+ </div>
 </div>
+ 
+ <!--
+ <div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio4" value="sequential">
+  <label class="form-check-label" for="inlineRadio4">Sequential</label>
+ </div>
+ -->
   <div class="form-group">
         <input type="text" class="form-control" id="patient_age_quantile" name="patient_age_quantile" placeholder="patient_age_quantile" required="required" >
   </div>
@@ -107,14 +136,16 @@
   </div>
   
   <button type="submit" class="btn btn-primary predict-button">Predict</button>
-</form>
-    </div>
+ </form>
+ </br>
   </div>
+  </div>
+</div>
 
-  </div>
+
 <!--[ container ] -->
 
-  <!--[ footer ] -->
+ <!--[ footer ] -->
   <footer class="page-footer text-center text-md-left pt-4">
   <div class="container-fluid">
     <div class="row">

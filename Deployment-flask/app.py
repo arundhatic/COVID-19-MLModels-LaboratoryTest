@@ -2,10 +2,11 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 import os
-from sklearn.externals import joblib
+import joblib
 import numpy as np
 from flask import Flask, request, jsonify, render_template
-from sklearn.externals import joblib
+from sklearn.preprocessing import StandardScaler
+
 
 # Init app
 app = Flask(__name__)
@@ -56,21 +57,67 @@ class PredictSchema(ma.Schema):
 predict_schema = PredictSchema()
 predicts_schema = PredictSchema(many = True)
 
+#------- use the function if model saved is scaled)------#
+def scaleInput(inputArray):
+    reshaped = np.array(inputArray).reshape(1,-1)
+    x_scaler = StandardScaler().fit(reshaped)
+    return x_scaler.transform(reshaped)
+#------- use the function if model saved is scaled)------#    
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/LR')
 def LR():
-    return render_template('LR.html')
+    n1 = ['Total Patients', 'Negative COVID-19 Patients',
+        'Positive COVID-19 Patients']
+    v1 = [598, 517, 81]
+
+    n2 = ['Total Patient Training Data',
+        'Total Patient Testing Data']
+    v2 = [448, 150]
+
+    n3 = ['Accuracy', 'Precision', 'Recall']
+    result = ['93.3%', '80.0%', '63.2%']
+    return render_template('LR.html',
+        result=zip(n3, result),
+        final=zip(n3, result),
+        patient=zip(n1, v1),
+        split=zip(n2, v2)
+        )
 
 @app.route('/RFC')
 def RFC():
-    return render_template('RFC.html')
+    cm_dict = {
+        'tn' : 1276,
+        'fp' : 4,
+        'fn' : 123,
+        'tp' : 8
+    }
+   
+    accuracy_score = 0.907
+    
+    # recall: tp / (tp + fn)
+    recall  = cm_dict['tp'] / (cm_dict['tp']+ cm_dict['fn'])
+    
+    # precision tp / (tp + fp)
+    precision  = cm_dict['tp'] / (cm_dict['tp'] + cm_dict['fp'])
+    
+    # f1: 2 tp / (2 tp + fp + fn)
+    f1_score  = 2*cm_dict['tp'] / (2*cm_dict['tp'] + cm_dict['fp'] + cm_dict['fn'])
+    
+    return render_template('RFC.html', accuracy_score = accuracy_score, precision = round(precision,3), recall= round(recall,3), f1_score = round(f1_score,2))
+
+@app.route('/SVC')
+def SVC():
+    return render_template('SVC.html')
+
+#@app.route('/sequential')
+#def sequential():
+    #return render_template('sequential.html')
 
 @app.route('/comparison')
-
-
 def comparison():
     return render_template('comparison.html')
 
@@ -78,15 +125,19 @@ def comparison():
 # Create a prediction from app form 
 @app.route('/predict', methods=['POST'])
 def predict():
-    #print(request.form.get('inlineRadioOptions'))
-
+    
     if (request.form.get('inlineRadioOptions') == 'RFC'):
-        model  = joblib.load('models/bloottest_RFC_selected_features.pkl')
+        model  = joblib.load('models/bloottest_RFC_selected_features_unscaled.pkl')
+       # model  = joblib.load('models/bloottest_RFC_selected_features.pkl')
     elif (request.form.get('inlineRadioOptions') == 'LR'):
-        model  = joblib.load('bloottest_LR_selected_features_test.pkl')
+        model  = joblib.load('models/bloottest_LR_selected_features_test.pkl')
+   # elif (request.form.get('inlineRadioOptions') == 'sequential'):
+       # model  = joblib.load('models/tensor_model.pkl')
+    elif (request.form.get('inlineRadioOptions') == 'SVC'):
+        model  = joblib.load('models/svc_model_covid_blood.pkl')
     else:
         model  = joblib.load('models/bloottest_RFC_selected_features.pkl') 
-           
+    
     patient_age_quantile = request.form.get('patient_age_quantile')
     leukocytes = request.form.get('leukocytes')
     platelets = request.form.get('platelets')
@@ -98,7 +149,7 @@ def predict():
     lymphocytes = request.form.get('lymphocytes')
     mean_platelet_volume = request.form.get('mean_platelet_volume')
     
-     
+    print(request.form.get('inlineRadioOptions')) 
     print(patient_age_quantile, leukocytes)
     print(type(patient_age_quantile), type(leukocytes))
 
@@ -124,7 +175,10 @@ def predict():
                 float(lymphocytes),
                 float(mean_platelet_volume)
                 ]
-    
+    #------- use the function if model saved is scaled)------#
+    #final_features = scaleInput(features)
+    #------- use the function if model saved is scaled)------#
+     
     final_features = [np.array(features)]
     prediction = model.predict(final_features)
     predicted_value = prediction[0]
@@ -133,7 +187,6 @@ def predict():
     else: 
         prediction_resp ='Negative'  
                  
-
     return render_template('index.html', prediction_text=prediction_resp)
 
 
@@ -176,14 +229,14 @@ def get_prodictions():
     print(jsonify(result))
     return jsonify(result)
 
-# Get Single Prediction
+# Get Single Prediction data
 @app.route('/prediction/<id>', methods=['GET'])
 def get_prodiction(id):
   predict = Predict.query.get(id)
   return predict_schema.jsonify(predict)
 
 
-# Delete Prediction
+# Delete prediction
 @app.route('/prediction/<id>', methods=['DELETE'])
 def delete_prediction(id):
   predict = Predict.query.get(id)

@@ -93,9 +93,8 @@ h3{
     color: #A6A6A6;
 }
 
-.container{
-    
-    min-height: 90vh; /* minus the height of the footer */
+div.selection{
+    padding-bottom: 30px;
   }
 
 .predict-button{

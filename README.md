@@ -1,15 +1,11 @@
-# COVID-19-MLModels-LaboratoryTest
-In this work, its shown that it is possible to predict the test result for SARS-CoV-2 based on the results of laboratory tests commonly collected for a suspected COVID-19 case by analyzing a sample of 5644 patients of which 558 tested positive for SARS-CoV-2 from the Hospital Israelita Albert Einstein.
-
+# ucsd_data_science_final_project
 ## Installation and steps to run the app:
+**NOTE**: These install instructions is only for setting up your environment the first time. No need to rerun all steps after you've created your database. Simply run the following command: `pipenv shell`.
 - cd Deployment-flask
 - python3 —version -> make sure python version is 3.*
 - pip3 install pipenv -> virtual enviornment
 - pipenv shell -> activate the virtual env
-- pipenv install flask flask-sqlalchemy flask-marshmallow marshmallow-sqlalchemy sklearn -> install the relevant libraries in your virtual env
+- pipenv install flask flask-sqlalchemy flask-marshmallow marshmallow-sqlalchemy scikit-learn -> install the relevant libraries in your virtual env
 - python3 -> go python shell
 - from app import db 
 - db.create.all() -> creating the sqlite database
-
-## data set:
-https://www.kaggle.com/einsteindata4u/covid19
