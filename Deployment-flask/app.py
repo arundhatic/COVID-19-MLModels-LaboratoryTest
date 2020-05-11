@@ -109,13 +109,6 @@ def RFC():
     
     return render_template('RFC.html', accuracy_score = accuracy_score, precision = round(precision,3), recall= round(recall,3), f1_score = round(f1_score,2))
 
-@app.route('/SVC')
-def SVC():
-    return render_template('SVC.html')
-
-#@app.route('/sequential')
-#def sequential():
-    #return render_template('sequential.html')
 
 @app.route('/comparison')
 def comparison():
