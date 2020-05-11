@@ -41,8 +41,8 @@ mean_platelet_volume
 -   Database:  SQLite
 
 ## Screen Shots:
-![](screen_shots/screen_shot1.png)
-![](screen_shots/screen_shot2.png)
+![](screen_shots/screen_shot1a.png)
+![](screen_shots/screen_shot2a.png)
 ![](screen_shots/screen_shot3.png)
 ![](screen_shots/screen_shot4.png)
 ![](screen_shots/screen_shot5.png)
